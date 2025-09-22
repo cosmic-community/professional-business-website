@@ -1,3 +1,5 @@
+'use client'
+
 import { Service } from '@/types'
 import { useCart } from '@/hooks/useCart'
 import { useState } from 'react'
@@ -7,104 +9,73 @@ interface ServiceCardProps {
 }
 
 export default function ServiceCard({ service }: ServiceCardProps) {
-  const { addToCart, isInCart, getItemQuantity } = useCart();
-  const [isAdding, setIsAdding] = useState(false);
-  const [notes, setNotes] = useState('');
+  const { addToCart, isInCart } = useCart()
+  const [isAdding, setIsAdding] = useState(false)
 
-  // Safe function to get category display value
-  const getCategoryDisplay = (category: any): string => {
-    if (!category) return '';
-    if (typeof category === 'object' && category.value) {
-      return category.value;
-    }
-    if (typeof category === 'string') {
-      return category;
-    }
-    return '';
-  };
+  const handleAddToCart = () => {
+    if (!service.metadata?.is_orderable || isInCart(service.id)) return
+    
+    setIsAdding(true)
+    addToCart(service)
+    
+    // Reset button state after animation
+    setTimeout(() => {
+      setIsAdding(false)
+    }, 1000)
+  }
 
-  // Safe function to get pricing type display value
-  const getPricingTypeDisplay = (pricingType: any): string => {
-    if (!pricingType) return '';
-    if (typeof pricingType === 'object' && pricingType.value) {
-      return pricingType.value;
-    }
-    if (typeof pricingType === 'string') {
-      return pricingType;
-    }
-    return '';
-  };
-
-  const categoryDisplay = getCategoryDisplay(service.metadata?.service_category);
-  const pricingTypeDisplay = getPricingTypeDisplay(service.metadata?.pricing_type);
-
-  const handleAddToCart = async () => {
-    setIsAdding(true);
-    try {
-      addToCart(service, 1, notes);
-      setNotes(''); // Clear notes after adding
-    } catch (error) {
-      console.error('Failed to add to cart:', error);
-    } finally {
-      setIsAdding(false);
-    }
-  };
-
-  const currentQuantity = getItemQuantity(service.id);
+  const isOrderable = service.metadata?.is_orderable
+  const inCart = isInCart(service.id)
+  const serviceName = service.metadata?.service_name || service.title
+  const shortDescription = service.metadata?.short_description
+  const startingPrice = service.metadata?.starting_price
+  const features = service.metadata?.features || []
+  const serviceIcon = service.metadata?.service_icon
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col">
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-secondary-100 transition-all duration-300 hover:shadow-xl hover:border-primary-200">
       {/* Service Icon */}
-      {service.metadata?.service_icon?.imgix_url && (
-        <div className="p-6 pb-4">
+      {serviceIcon?.imgix_url && (
+        <div className="h-48 bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center">
           <img
-            src={`${service.metadata.service_icon.imgix_url}?w=120&h=120&fit=crop&auto=format,compress`}
-            alt={service.metadata?.service_name || service.title}
-            width={60}
-            height={60}
-            className="w-15 h-15 object-contain"
+            src={`${serviceIcon.imgix_url}?w=160&h=160&fit=crop&auto=format,compress`}
+            alt={serviceName}
+            className="w-20 h-20 object-cover rounded-lg"
+            width="80"
+            height="80"
           />
         </div>
       )}
 
-      <div className="p-6 pt-2 flex-1 flex flex-col">
-        {/* Category Badge */}
-        {categoryDisplay && (
-          <div className="inline-block mb-3">
-            <span className="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-medium">
-              {categoryDisplay}
-            </span>
-          </div>
-        )}
-
+      <div className="p-6">
         {/* Service Name */}
-        <h3 className="text-xl font-bold text-secondary-900 mb-3">
-          {service.metadata?.service_name || service.title}
+        <h3 className="text-xl font-bold text-secondary-900 mb-2">
+          {serviceName}
         </h3>
 
         {/* Short Description */}
-        {service.metadata?.short_description && (
-          <p className="text-secondary-600 mb-4 flex-1">
-            {service.metadata.short_description}
+        {shortDescription && (
+          <p className="text-secondary-600 mb-4 leading-relaxed">
+            {shortDescription}
           </p>
         )}
 
         {/* Features */}
-        {service.metadata?.features && Array.isArray(service.metadata.features) && service.metadata.features.length > 0 && (
-          <div className="mb-4">
-            <h4 className="font-medium text-secondary-900 mb-2">Features:</h4>
-            <ul className="text-sm text-secondary-600 space-y-1">
-              {service.metadata.features.slice(0, 3).map((feature, index) => (
-                <li key={index} className="flex items-start">
-                  <svg className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        {features.length > 0 && (
+          <div className="mb-6">
+            <h4 className="text-sm font-semibold text-secondary-800 mb-2">What's Included:</h4>
+            <ul className="space-y-1">
+              {features.slice(0, 4).map((feature, index) => (
+                <li key={index} className="flex items-center text-sm text-secondary-600">
+                  <svg className="w-4 h-4 text-primary-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   {feature}
                 </li>
               ))}
-              {service.metadata.features.length > 3 && (
-                <li className="text-primary-600 text-sm">
-                  +{service.metadata.features.length - 3} more features
+              {features.length > 4 && (
+                <li className="text-sm text-secondary-500 ml-6">
+                  +{features.length - 4} more features
                 </li>
               )}
             </ul>
@@ -112,91 +83,69 @@ export default function ServiceCard({ service }: ServiceCardProps) {
         )}
 
         {/* Pricing */}
-        <div className="mb-4">
-          {service.metadata?.starting_price ? (
+        <div className="mb-6">
+          {startingPrice ? (
             <div className="text-2xl font-bold text-primary-600">
-              {service.metadata.starting_price}
+              {startingPrice}
             </div>
-          ) : service.metadata?.price_amount ? (
+          ) : (
             <div className="text-2xl font-bold text-primary-600">
-              ${service.metadata.price_amount.toLocaleString()}
+              Custom Quote
             </div>
-          ) : null}
-          
-          {pricingTypeDisplay && (
-            <div className="text-sm text-secondary-600">{pricingTypeDisplay}</div>
           )}
-          
           {service.metadata?.duration && (
-            <div className="text-sm text-secondary-500">Duration: {service.metadata.duration}</div>
+            <div className="text-sm text-secondary-500">
+              Duration: {service.metadata.duration}
+            </div>
           )}
-        </div>
-
-        {/* Notes Input */}
-        <div className="mb-4">
-          <label htmlFor={`notes-${service.id}`} className="block text-sm font-medium text-secondary-700 mb-1">
-            Special Requirements (Optional)
-          </label>
-          <textarea
-            id={`notes-${service.id}`}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Any specific requirements or notes..."
-            rows={2}
-            className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 text-sm"
-          />
         </div>
 
         {/* Action Button */}
-        <div className="mt-auto">
-          {service.metadata?.is_orderable ? (
-            <div>
-              {currentQuantity > 0 ? (
-                <div className="text-center">
-                  <div className="text-sm text-green-600 font-medium mb-2">
-                    ✓ Added to cart ({currentQuantity})
-                  </div>
-                  <button
-                    onClick={handleAddToCart}
-                    disabled={isAdding}
-                    className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
-                      isAdding
-                        ? 'bg-secondary-400 cursor-not-allowed text-white'
-                        : 'bg-secondary-600 hover:bg-secondary-700 text-white'
-                    }`}
-                  >
-                    {isAdding ? 'Adding...' : 'Add Another'}
-                  </button>
-                </div>
+        <div className="space-y-2">
+          {isOrderable ? (
+            <button
+              onClick={handleAddToCart}
+              disabled={inCart || isAdding}
+              className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                inCart
+                  ? 'bg-green-100 text-green-800 cursor-not-allowed'
+                  : isAdding
+                  ? 'bg-primary-500 text-white cursor-not-allowed'
+                  : 'bg-primary-600 hover:bg-primary-700 text-white hover:shadow-lg'
+              }`}
+            >
+              {inCart ? (
+                <span className="flex items-center justify-center">
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Added to Cart
+                </span>
+              ) : isAdding ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Adding...
+                </span>
               ) : (
-                <button
-                  onClick={handleAddToCart}
-                  disabled={isAdding}
-                  className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
-                    isAdding
-                      ? 'bg-primary-400 cursor-not-allowed text-white'
-                      : 'bg-primary-600 hover:bg-primary-700 text-white'
-                  }`}
-                >
-                  {isAdding ? 'Adding to Cart...' : 'Add to Cart'}
-                </button>
+                'Add to Cart'
               )}
-            </div>
+            </button>
           ) : (
             <button
-              className="w-full py-3 px-4 bg-secondary-600 hover:bg-secondary-700 text-white rounded-lg font-medium transition-colors duration-200"
-              onClick={() => {
-                // Scroll to contact section or open contact modal
-                const contactSection = document.getElementById('contact');
-                if (contactSection) {
-                  contactSection.scrollIntoView({ behavior: 'smooth' });
-                } else {
-                  window.location.href = '/#contact';
-                }
-              }}
+              className="w-full py-3 px-4 rounded-lg font-medium bg-secondary-100 text-secondary-600 cursor-not-allowed"
+              disabled
             >
-              Get Quote
+              Contact for Quote
             </button>
+          )}
+          
+          {service.metadata?.requires_consultation && (
+            <div className="text-xs text-center text-secondary-500">
+              Consultation required before starting
+            </div>
           )}
         </div>
       </div>
