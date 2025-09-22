@@ -23,7 +23,7 @@ export default function CheckoutPage() {
       country: 'United States'
     },
     preferred_contact_method: 'Email',
-    project_timeline: 'ASAP',
+    project_timeline: 'Within 1 month',
     notes: ''
   });
 

@@ -106,7 +106,7 @@ export interface OrderServiceItem {
   notes?: string;
 }
 
-// Order interface
+// Order interface - using exact values from Cosmic CMS
 export interface Order extends CosmicObject {
   type: 'orders';
   metadata: {
@@ -117,7 +117,7 @@ export interface Order extends CosmicObject {
     services?: OrderServiceItem[];
     total_amount?: number;
     order_status?: 'Pending' | 'Confirmed' | 'In Progress' | 'Completed' | 'Cancelled';
-    payment_status?: 'Pending' | 'Paid' | 'Partial' | 'Refunded';
+    payment_status?: 'Pending' | 'Paid' | 'Refunded';
     order_date?: string;
     notes?: string;
     billing_address?: {
@@ -128,7 +128,7 @@ export interface Order extends CosmicObject {
       country?: string;
     };
     preferred_contact_method?: 'Email' | 'Phone' | 'Both';
-    project_timeline?: 'As Soon As Possible' | 'Within 1 Month' | 'Within 3 Months' | 'Within 6 Months' | 'Flexible';
+    project_timeline?: 'ASAP' | 'Within 1 month' | '1-3 months' | '3-6 months' | '6+ months';
   };
 }
 
@@ -146,7 +146,7 @@ export interface CartState {
   itemCount: number;
 }
 
-// Checkout form data interface
+// Checkout form data interface - using exact values from Cosmic CMS
 export interface CheckoutFormData {
   customer_name: string;
   customer_email: string;
@@ -159,7 +159,7 @@ export interface CheckoutFormData {
     country: string;
   };
   preferred_contact_method: 'Email' | 'Phone' | 'Both';
-  project_timeline: 'As Soon As Possible' | 'Within 1 Month' | 'Within 3 Months' | 'Within 6 Months' | 'Flexible';
+  project_timeline: 'ASAP' | 'Within 1 month' | '1-3 months' | '3-6 months' | '6+ months';
   notes: string;
 }
 

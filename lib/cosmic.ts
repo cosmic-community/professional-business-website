@@ -50,13 +50,20 @@ export async function getServiceBySlug(slug: string): Promise<Service | null> {
 // Fetch multiple services by IDs
 export async function getServicesByIds(ids: string[]): Promise<Service[]> {
   try {
-    const promises = ids.map(id => 
-      cosmic.objects
-        .findOne({ type: 'services', id })
-        .props(['id', 'title', 'slug', 'metadata'])
-        .depth(1)
-        .catch(() => null)
-    );
+    const promises = ids.map(async id => {
+      try {
+        const response = await cosmic.objects
+          .findOne({ type: 'services', id })
+          .props(['id', 'title', 'slug', 'metadata'])
+          .depth(1);
+        return response.object as Service;
+      } catch (error) {
+        if (hasStatus(error) && error.status === 404) {
+          return null;
+        }
+        throw error;
+      }
+    });
     
     const results = await Promise.all(promises);
     return results.filter(Boolean) as Service[];
