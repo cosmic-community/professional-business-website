@@ -1,19 +1,23 @@
 import Hero from '@/components/Hero'
 import ServicesSection from '@/components/ServicesSection'
-import TeamSection from '@/components/TeamSection'
 import TestimonialsSection from '@/components/TestimonialsSection'
 import CaseStudiesSection from '@/components/CaseStudiesSection'
+import TeamSection from '@/components/TeamSection'
 import CTASection from '@/components/CTASection'
+import CosmicBadge from '@/components/CosmicBadge'
 
 export default function HomePage() {
+  const bucketSlug = process.env.COSMIC_BUCKET_SLUG as string
+
   return (
-    <div className="min-h-screen">
+    <main>
       <Hero />
       <ServicesSection />
-      <TeamSection />
       <TestimonialsSection />
       <CaseStudiesSection />
+      <TeamSection />
       <CTASection />
-    </div>
+      <CosmicBadge bucketSlug={bucketSlug} />
+    </main>
   )
 }
