@@ -21,12 +21,17 @@ export interface Service extends CosmicObject {
       url: string;
       imgix_url: string;
     };
-    starting_price?: string;
+    service_category?: 'Consulting' | 'Development' | 'Marketing' | 'Design' | 'Other';
+    pricing_type?: 'Fixed Price' | 'Hourly Rate' | 'Monthly Subscription' | 'Custom Quote';
     price_amount?: number;
-    features?: string[];
-    service_category?: string;
+    starting_price?: string;
     duration?: string;
+    features?: string[];
     included_deliverables?: string[];
+    is_orderable?: boolean;
+    requires_consultation?: boolean;
+    minimum_quantity?: number;
+    maximum_quantity?: number;
   };
 }
 
@@ -92,6 +97,15 @@ export interface CaseStudy extends CosmicObject {
   };
 }
 
+// Order service item interface
+export interface OrderServiceItem {
+  service_id: string;
+  service_name: string;
+  quantity: number;
+  price: number;
+  notes?: string;
+}
+
 // Order interface
 export interface Order extends CosmicObject {
   type: 'orders';
@@ -100,10 +114,10 @@ export interface Order extends CosmicObject {
     customer_name?: string;
     customer_email?: string;
     customer_phone?: string;
-    services?: Service[];
+    services?: OrderServiceItem[];
     total_amount?: number;
-    order_status?: string;
-    payment_status?: string;
+    order_status?: 'Pending' | 'Confirmed' | 'In Progress' | 'Completed' | 'Cancelled';
+    payment_status?: 'Pending' | 'Paid' | 'Partial' | 'Refunded';
     order_date?: string;
     notes?: string;
     billing_address?: {
@@ -113,8 +127,8 @@ export interface Order extends CosmicObject {
       zip_code?: string;
       country?: string;
     };
-    preferred_contact_method?: string;
-    project_timeline?: string;
+    preferred_contact_method?: 'Email' | 'Phone' | 'Both';
+    project_timeline?: 'As Soon As Possible' | 'Within 1 Month' | 'Within 3 Months' | 'Within 6 Months' | 'Flexible';
   };
 }
 
@@ -144,8 +158,8 @@ export interface CheckoutFormData {
     zip_code: string;
     country: string;
   };
-  preferred_contact_method: string;
-  project_timeline: string;
+  preferred_contact_method: 'Email' | 'Phone' | 'Both';
+  project_timeline: 'As Soon As Possible' | 'Within 1 Month' | 'Within 3 Months' | 'Within 6 Months' | 'Flexible';
   notes: string;
 }
 
