@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import CartButton from '@/components/CartButton'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -35,16 +36,20 @@ export default function Header() {
                 {item.name}
               </Link>
             ))}
-            <Link
-              href="#contact"
-              className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
-            >
-              Get Started
-            </Link>
+            <div className="flex items-center space-x-3">
+              <CartButton />
+              <Link
+                href="#contact"
+                className="bg-secondary-600 hover:bg-secondary-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+              >
+                Get Started
+              </Link>
+            </div>
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center space-x-2">
+            <CartButton />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-secondary-700 hover:text-primary-600 p-2"
@@ -77,7 +82,7 @@ export default function Header() {
               ))}
               <Link
                 href="#contact"
-                className="block bg-primary-600 hover:bg-primary-700 text-white px-3 py-2 mt-4 rounded-lg text-base font-medium text-center"
+                className="block bg-secondary-600 hover:bg-secondary-700 text-white px-3 py-2 mt-4 rounded-lg text-base font-medium text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Get Started

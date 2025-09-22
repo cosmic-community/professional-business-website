@@ -22,7 +22,11 @@ export interface Service extends CosmicObject {
       imgix_url: string;
     };
     starting_price?: string;
+    price_amount?: number;
     features?: string[];
+    service_category?: string;
+    duration?: string;
+    included_deliverables?: string[];
   };
 }
 
@@ -88,6 +92,63 @@ export interface CaseStudy extends CosmicObject {
   };
 }
 
+// Order interface
+export interface Order extends CosmicObject {
+  type: 'orders';
+  metadata: {
+    order_number?: string;
+    customer_name?: string;
+    customer_email?: string;
+    customer_phone?: string;
+    services?: Service[];
+    total_amount?: number;
+    order_status?: string;
+    payment_status?: string;
+    order_date?: string;
+    notes?: string;
+    billing_address?: {
+      street?: string;
+      city?: string;
+      state?: string;
+      zip_code?: string;
+      country?: string;
+    };
+    preferred_contact_method?: string;
+    project_timeline?: string;
+  };
+}
+
+// Cart item interface
+export interface CartItem {
+  service: Service;
+  quantity: number;
+  notes?: string;
+}
+
+// Cart state interface
+export interface CartState {
+  items: CartItem[];
+  total: number;
+  itemCount: number;
+}
+
+// Checkout form data interface
+export interface CheckoutFormData {
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  billing_address: {
+    street: string;
+    city: string;
+    state: string;
+    zip_code: string;
+    country: string;
+  };
+  preferred_contact_method: string;
+  project_timeline: string;
+  notes: string;
+}
+
 // API response types
 export interface CosmicResponse<T> {
   objects: T[];
@@ -111,4 +172,8 @@ export function isTestimonial(obj: CosmicObject): obj is Testimonial {
 
 export function isCaseStudy(obj: CosmicObject): obj is CaseStudy {
   return obj.type === 'case-studies';
+}
+
+export function isOrder(obj: CosmicObject): obj is Order {
+  return obj.type === 'orders';
 }
